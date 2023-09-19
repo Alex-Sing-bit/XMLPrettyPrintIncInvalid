@@ -1,6 +1,7 @@
 package ru.vsu.cs.baklanova;
 
 
+import javax.swing.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -17,6 +18,7 @@ public class Program {
     public static class CmdParams {
         public String inputFile;
         public String outputFile;
+        public boolean window;
         public boolean first;
         public boolean error;
         public boolean help;
@@ -30,26 +32,36 @@ public class Program {
                 params.help = true;
                 return params;
             }
-            if (!args[0].equals("-first")) {
-                params.error = true;
-                params.help = true;
+            if (args[0].equals("--window")) {
+                params.window = true;
                 return params;
             }
-            else { //if (args[0].equals("-first")) {
+            if (args[0].equals("-first")) {
                 params.first = true;
             }
-
-            if (args.length > 1) {
-                params.inputFile = args[1];
-                if (args.length > 2) {
-                    params.outputFile = args[2];
-                }
+            if (args.length < 2) {
+                params.help = true;
+                params.error = true;
+                return params;
+            }
+            params.inputFile = args[1];
+            if (args.length > 2) {
+                params.outputFile = args[2];
             }
         } else {
             params.help = true;
             params.error = true;
         }
         return params;
+    }
+
+    public static void winMain() throws Exception {
+        Locale.setDefault(Locale.ROOT);
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new FrameMain().setVisible(true);
+            }
+        });
     }
 
     public static void main(String[] args) throws Exception {
@@ -60,7 +72,11 @@ public class Program {
             out.println("  <cmd> args <input-file> (<output-file>)");
             out.println("    -first  // give answer version 1");
             out.println("  <cmd> --help");
+            out.println("  <cmd> --window  // show window");
             System.exit(params.error ? 1 : 0);
+        }
+        if (params.window) {
+            winMain();
         }
         else {
             System.out.println(params.inputFile);
