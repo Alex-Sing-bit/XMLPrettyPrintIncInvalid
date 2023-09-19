@@ -179,9 +179,9 @@ public class XMLTree<T extends Comparable<? super T>> {
     }
 
     private void xmlTreeToStrings(ArrayList<String> arr, TreeNode node, int level) {
-        final String space = "    ";
+        final String space = "\t";
         if (level >= 0) {
-            arr.add((space.repeat(level)) + "<" + node.tagsToString() + ">");
+            arr.add((space.repeat(level)) + "<" + node.tagsToString() + ">" + "\n");
             if (!node.value.trim().equals("")) {
                 arr.add((space.repeat(level + 1)) + node.value);
             }

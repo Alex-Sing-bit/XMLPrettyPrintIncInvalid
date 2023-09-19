@@ -6,19 +6,23 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.PrintStream;
+import java.util.ArrayList;
 
 public class FrameMain extends JFrame{
     private JFrame Form;
     private JPanel panelMain;
-    private JTextArea textAreaInput;
-    private JTextArea textAreaOutput;
     private JButton buttonSaveOutputIntoFile;
     private JButton button3;
     private JButton buttonPrettyPrint;
     private JButton buttonLoadInputFromFile;
+    private JTextPane textPaneInputFromFile;
+    private JTextPane textPaneSaveToFile;
 
     private JFileChooser fileChooserOpen;
     private JFileChooser fileChooserSave;
+
+    private ArrayList<String> arr1;
 
     public FrameMain() {
         this.setTitle("FrameMain");
@@ -41,8 +45,9 @@ public class FrameMain extends JFrame{
                 try {
                     if (fileChooserOpen.showOpenDialog(panelMain) == JFileChooser.APPROVE_OPTION) {
                         String[] arr = Program.readLinesFromFile(fileChooserOpen.getSelectedFile().getPath());
+                        textPaneInputFromFile.setText("");
                         for (String s : arr) {
-                            textAreaInput.setText(textAreaInput.getText() + '\n' + s);
+                            textPaneInputFromFile.setText(textPaneInputFromFile.getText() + '\n' + s);
                         }
 
                     }
@@ -57,12 +62,32 @@ public class FrameMain extends JFrame{
             public void actionPerformed(ActionEvent actionEvent) {
                 try {
                     if (fileChooserSave.showSaveDialog(panelMain) == JFileChooser.APPROVE_OPTION) {
-                        //int[][] matrix = JTableUtils.readIntMatrixFromJTable(tableOutput);
                         String file = fileChooserSave.getSelectedFile().getPath();
                         if (!file.toLowerCase().endsWith(".txt")) {
                             file += ".txt";
                         }
-                        //ArrayUtils.writeArrayToFile(file, matrix);
+                        PrintStream out = new PrintStream(file);
+                        //for (String s : arr1) {
+                        out.println(textPaneSaveToFile.getText());
+                        //}
+                        //out.close();
+                    }
+                } catch (Exception e) {
+                    //SwingUtils.showErrorMessageBox(e);
+                }
+            }
+        });
+
+        buttonPrettyPrint.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                try {
+                    XMLTree<String> tree = new XMLTree<>();
+                    tree.fromStringXML(textPaneInputFromFile.getText());
+                    arr1 = tree.xmlTreeToStrings();
+                    textPaneSaveToFile.setText("");
+                    for (String s : arr1) {
+                        textPaneSaveToFile.setText(textPaneSaveToFile.getText() + s);
                     }
                 } catch (Exception e) {
                     //SwingUtils.showErrorMessageBox(e);

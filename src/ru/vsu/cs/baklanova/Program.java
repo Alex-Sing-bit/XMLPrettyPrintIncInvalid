@@ -91,7 +91,7 @@ public class Program {
             ArrayList<String> arr1 = tree.xmlTreeToStrings();
             PrintStream out = (params.outputFile != null) ? new PrintStream(params.outputFile) : System.out;
             for (String s : arr1) {
-                out.println(s);
+                out.print(s);
             }
             out.close();
         }
