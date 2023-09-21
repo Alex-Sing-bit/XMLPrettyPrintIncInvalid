@@ -158,18 +158,20 @@ public class XMLTree<T extends Comparable<? super T>> {
 
             TreeNode thisNode = new TreeNode(null, value, null, closed);
             thisNode.stringToTags(subStr);
-            if (Objects.equals(thisNode.tags.get(0), "/" + node.tags.get(0))) {
+
+            TreeNode isCloseKid = openOneInChildren(node, subStr);
+            if (isClosedTag && isCloseKid != null) {
+                node.addChildren(thisNode);
+            } else if (Objects.equals(thisNode.tags.get(0), "/" + node.tags.get(0))) {
                 node.closed = true;
                 str = "<" + subStr + ">" + str;
-            } else {
-                if (isClosedTag) {
-                    System.out.print("Предупреждение - тэг <" + node.tagsToString() + "> не был закрыт до появления закрывающего тэга <" + thisNode.tagsToString());
-                    System.out.println(">. Код далее отредактирован с учетом мнения, что был потерян открывающий тэг для <" + thisNode.tagsToString() + ">");
-                    node.addChildren(thisNode);
-                } else {
-                    node.addChildren(thisNode);
-                    str = fromStringXML(str, thisNode);
-                }
+            } else if (isClosedTag) {
+                System.out.print("Предупреждение - тэг <" + node.tagsToString() + "> не был закрыт до появления закрывающего тэга <" + thisNode.tagsToString());
+                System.out.println(">. Код далее отредактирован с учетом мнения, что (возможно) был потерян открывающий тэг для <" + thisNode.tagsToString() + ">");
+                node.addChildren(thisNode);}
+            else {
+                node.addChildren(thisNode);
+                str = fromStringXML(str, thisNode);
             }
         }
         return str;
@@ -195,6 +197,22 @@ public class XMLTree<T extends Comparable<? super T>> {
                 xmlTreeToStrings(arr, n, level + 1);
             }
         }
+    }
+
+    public static TreeNode openOneInChildren(TreeNode node, String str) {
+        if(node.children == null) {
+            return null;
+        }
+        int i = 0;
+        TreeNode node1 = null;
+        for (TreeNode kid : node.children) {
+            if (Objects.equals(kid.tags.get(0), str.substring(1))) {
+                node1 = kid;
+            } else if (Objects.equals(kid.tags.get(0), str)) {
+                node1 = null;
+            }
+        }
+        return node1;
     }
 }
 
