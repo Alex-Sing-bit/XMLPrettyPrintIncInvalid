@@ -79,7 +79,7 @@ public class Program {
             winMain();
         }
         else {
-            System.out.println(params.inputFile);
+            //System.out.println(params.inputFile);
             String[] arr = readLinesFromFile(params.inputFile);
             String str = "";
             for (String s : arr) {

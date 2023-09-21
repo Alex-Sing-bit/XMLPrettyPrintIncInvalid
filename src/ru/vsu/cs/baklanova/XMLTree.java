@@ -33,7 +33,9 @@ public class XMLTree<T extends Comparable<? super T>> {
                 str = str.substring(ind).trim();
             }
 
-            arr.add(str);
+            if (!str.equals("")) {
+                arr.add(str);
+            }
 
             int size = arr.size();
             for (int i = 1; i < size; i++) {
@@ -91,7 +93,7 @@ public class XMLTree<T extends Comparable<? super T>> {
         while (!Objects.equals(str, "")){
             str = str.trim();
             int st = str.indexOf('<');
-            if (str.equals("") || st == -1) { //Не работает для последней строки без тегов??
+            if (str.equals("") || st == -1) {
                 return;
             }
             int fin = str.indexOf('>') + 1;
@@ -132,7 +134,7 @@ public class XMLTree<T extends Comparable<? super T>> {
         while (!node.closed) {
             str = str.trim();
             int st = str.indexOf('<');
-            if (str.equals("") || st == -1) { //Не работает для последней строки без тегов??
+            if (str.equals("") || st == -1) {
                 return str;
             }
             int fin = str.indexOf('>') + 1;
@@ -161,11 +163,13 @@ public class XMLTree<T extends Comparable<? super T>> {
                 str = "<" + subStr + ">" + str;
             } else {
                 if (isClosedTag) {
-                    System.out.print("Ошибка - тэг <" + node.tagsToString() + "> не был закрыт до появления закрывающего тэга <" + thisNode.tagsToString());
+                    System.out.print("Предупреждение - тэг <" + node.tagsToString() + "> не был закрыт до появления закрывающего тэга <" + thisNode.tagsToString());
                     System.out.println(">. Код далее отредактирован с учетом мнения, что был потерян открывающий тэг для <" + thisNode.tagsToString() + ">");
+                    node.addChildren(thisNode);
+                } else {
+                    node.addChildren(thisNode);
+                    str = fromStringXML(str, thisNode);
                 }
-                node.addChildren(thisNode);
-                str = fromStringXML(str, thisNode);
             }
         }
         return str;
@@ -183,7 +187,7 @@ public class XMLTree<T extends Comparable<? super T>> {
         if (level >= 0) {
             arr.add((space.repeat(level)) + "<" + node.tagsToString() + ">" + "\n");
             if (!node.value.trim().equals("")) {
-                arr.add((space.repeat(level + 1)) + node.value);
+                arr.add((space.repeat(level + 1)) + node.value + "\n");
             }
         }
         if (node.children != null) {

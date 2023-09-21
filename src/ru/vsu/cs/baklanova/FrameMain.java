@@ -3,6 +3,9 @@ package ru.vsu.cs.baklanova;
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.text.Style;
+import javax.swing.text.StyleConstants;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -49,7 +52,7 @@ public class FrameMain extends JFrame{
                         for (String s : arr) {
                             textPaneInputFromFile.setText(textPaneInputFromFile.getText() + '\n' + s);
                         }
-
+                        int n = 999;
                     }
                 } catch (Exception e) {
                     //SwingUtils.showErrorMessageBox(e);
@@ -83,10 +86,12 @@ public class FrameMain extends JFrame{
             public void actionPerformed(ActionEvent actionEvent) {
                 try {
                     XMLTree<String> tree = new XMLTree<>();
-                    tree.fromStringXML(textPaneInputFromFile.getText());
+                    tree.fromStringXML(textPaneInputFromFile.getText().replace('\n', ' '));
                     arr1 = tree.xmlTreeToStrings();
                     textPaneSaveToFile.setText("");
+
                     for (String s : arr1) {
+                        //createTXT(s);
                         textPaneSaveToFile.setText(textPaneSaveToFile.getText() + s);
                     }
                 } catch (Exception e) {
@@ -94,5 +99,21 @@ public class FrameMain extends JFrame{
                 }
             }
         });
+    }
+
+    private void createTXT(String s) {
+        for (char c : s.toCharArray()) {
+            if (c == 'C') {
+                Style style = textPaneSaveToFile.addStyle("I'm a Style", null);
+                StyleConstants.setForeground(style, new Color(250, 0,0));
+                int from = textPaneSaveToFile.getSelectionStart();
+                int to = textPaneSaveToFile.getSelectionEnd();
+                textPaneSaveToFile.getStyledDocument().setCharacterAttributes(4, 4, style, true);
+            } else {
+                textPaneSaveToFile.setForeground(new Color(0, 0, 250));
+            }
+            //textPaneSaveToFile.setForeground(new Color(0, 250, 0));
+            textPaneSaveToFile.setText(textPaneSaveToFile.getText() + c);
+        }
     }
 }
