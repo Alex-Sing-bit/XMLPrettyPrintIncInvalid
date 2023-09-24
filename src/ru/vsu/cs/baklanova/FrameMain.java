@@ -16,7 +16,6 @@ public class FrameMain extends JFrame{
     private JFrame Form;
     private JPanel panelMain;
     private JButton buttonSaveOutputIntoFile;
-    private JButton button3;
     private JButton buttonPrettyPrint;
     private JButton buttonLoadInputFromFile;
     private JTextPane textPaneInputFromFile;

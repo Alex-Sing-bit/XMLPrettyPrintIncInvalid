@@ -113,12 +113,12 @@ public class XMLTree<T extends Comparable<? super T>> {
 
             //ArrayList<String> sbs = new ArrayList<>(Arrays.asList(subStr.split(" ")));
 
-            boolean isComment = ((subStr.startsWith("!-")));
+            boolean isComment = ((subStr.startsWith("!--")));
             boolean isXMLVersion = (subStr.charAt(0) == '?' && subStr.charAt(subStr.length() - 1) == '?');
             boolean isClosedTag = subStr.charAt(0) == '/';
             boolean closed = isClosedTag || subStr.charAt(subStr.length() - 1) == '/' || isXMLVersion || isComment;
 
-            TreeNode thisNode = new TreeNode(null, value, null, closed);//" " - не учтено содержимое двойного тэга, закрываемость
+            TreeNode thisNode = new TreeNode(null, value, null, closed);
             thisNode.stringToTags(subStr);
             root.addChildren(thisNode);
             if (thisNode.closed) {
@@ -159,15 +159,16 @@ public class XMLTree<T extends Comparable<? super T>> {
             TreeNode thisNode = new TreeNode(null, value, null, closed);
             thisNode.stringToTags(subStr);
 
-            TreeNode isCloseKid = openOneInChildren(node, subStr);
+            TreeNode isCloseKid = openInChildren(node, subStr);
             if (isClosedTag && isCloseKid != null) {
                 node.addChildren(thisNode);
+                isCloseKid.closed = true;
             } else if (Objects.equals(thisNode.tags.get(0), "/" + node.tags.get(0))) {
                 node.closed = true;
                 str = "<" + subStr + ">" + str;
             } else if (isClosedTag) {
                 System.out.print("Предупреждение - тэг <" + node.tagsToString() + "> не был закрыт до появления закрывающего тэга <" + thisNode.tagsToString());
-                System.out.println(">. Код далее отредактирован с учетом мнения, что (возможно) был потерян открывающий тэг для <" + thisNode.tagsToString() + ">");
+                System.out.println(">. Код далее отредактирован с учетом мнения, что был потерян открывающий тэг для <" + thisNode.tagsToString() + ">");
                 node.addChildren(thisNode);}
             else {
                 node.addChildren(thisNode);
@@ -187,9 +188,9 @@ public class XMLTree<T extends Comparable<? super T>> {
     private void xmlTreeToStrings(ArrayList<String> arr, TreeNode node, int level) {
         final String space = "\t";
         if (level >= 0) {
-            arr.add((space.repeat(level)) + "<" + node.tagsToString() + ">" + "\n");
+            arr.add((repeat(space, level)) + "<" + node.tagsToString() + ">" + "\n");
             if (!node.value.trim().equals("")) {
-                arr.add((space.repeat(level + 1)) + node.value + "\n");
+                arr.add((repeat(space,level + 1)) + node.value + "\n");
             }
         }
         if (node.children != null) {
@@ -199,11 +200,10 @@ public class XMLTree<T extends Comparable<? super T>> {
         }
     }
 
-    public static TreeNode openOneInChildren(TreeNode node, String str) {
+    public static TreeNode openInChildren(TreeNode node, String str) {
         if(node.children == null) {
             return null;
         }
-        int i = 0;
         TreeNode node1 = null;
         for (TreeNode kid : node.children) {
             if (Objects.equals(kid.tags.get(0), str.substring(1))) {
@@ -213,6 +213,15 @@ public class XMLTree<T extends Comparable<? super T>> {
             }
         }
         return node1;
+    }
+
+    public static String repeat(String s, int n) {
+        String str = "";
+
+        for (int i = 0; i < n; i++) {
+            str += s;
+        }
+        return str;
     }
 }
 
